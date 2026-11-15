@@ -1,13 +1,19 @@
 {
-  "name": "bookshop",
-  "version": "1.0.1",
-  "description": "",
+  "name": "express-book-reviews",
+  "version": "1.0.2",
+  "description": "A REST API for browsing books and managing customer reviews using Express and JWT authentication.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "books",
+    "reviews",
+    "jwt",
+    "rest-api"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
