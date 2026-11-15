@@ -1,41 +1,58 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
-const customer_routes = require('./router/auth_users.js').authenticated;
-const genl_routes = require('./router/general.js').general;
+
+const customerRoutes = require('./router/auth_users.js').authenticated;
+const generalRoutes = require('./router/general.js').general;
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET || 'fingerprint_customer';
 
+app.disable('x-powered-by');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/customer", session({
-  secret: "fingerprint_customer",
+// Keep a session for each customer and use a JWT to authenticate protected routes.
+app.use('/customer', session({
+  secret: process.env.SESSION_SECRET || 'development_session_secret_change_me',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  }
 }));
 
-// Verify the JWT for authenticated customer routes.
-app.use("/customer/auth/*", function auth(req, res, next) {
-  const token = req.headers.authorization &&
-    req.headers.authorization.split(" ")[1];
+app.use('/customer/auth', (req, res, next) => {
+  const authorization = req.headers.authorization || '';
+  const [scheme, token] = authorization.split(' ');
 
-  if (!token) {
-    return res.status(401).json({ message: "Authorization token required." });
+  if (scheme !== 'Bearer' || !token) {
+    return res.status(401).json({ message: 'A Bearer token is required.' });
   }
 
   try {
-    const decoded = jwt.verify(token, "fingerprint_customer");
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.session.username = decoded.username;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token." });
+    return res.status(401).json({ message: 'Invalid or expired token.' });
   }
 });
 
-const PORT = process.env.PORT || 5000;
+app.use('/customer', customerRoutes);
+app.use('/', generalRoutes);
 
-app.use("/customer", customer_routes);
-app.use("/", genl_routes);
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'ExpressBookReviews API is running.' });
+});
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found.' });
+});
+
+app.listen(PORT, () => {
+  console.log(`ExpressBookReviews API is running at http://localhost:${PORT}`);
+});
