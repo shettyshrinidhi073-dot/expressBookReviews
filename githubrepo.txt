@@ -1,0 +1,11 @@
+Question 1 - githubrepo
+
+Run this command in the VS Code terminal (PowerShell):
+
+curl.exe -sS https://api.github.com/repos/shettyshrinidhi073-dot/expressBookReviews
+
+Paste the complete JSON output returned by GitHub below the command. The output should show:
+- "fork": true
+- "parent": { "full_name": "ibm-developer-skills-network/expressBookReviews" }
+
+Do not invent or manually type the output; use the actual response from GitHub.
