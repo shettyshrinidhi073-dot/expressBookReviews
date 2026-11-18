@@ -1,0 +1,15 @@
+Question 2 - getallbooks
+
+Start the Express Book Reviews API in the first VS Code terminal:
+
+cd final_project
+npm install
+npm start
+
+Keep the server running. Open a second terminal and run:
+
+curl.exe -i http://localhost:5000/
+
+Paste the complete output returned by your running API below the command. It should include the HTTP response and the JSON list of books.
+
+If the request cannot connect, make sure the server is running in the first terminal.
